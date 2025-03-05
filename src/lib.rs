@@ -3,8 +3,6 @@
 #![doc = include_str!("../README.md")]
 
 use crate::action_state::ActionState;
-use crate::input_map::InputMap;
-use bevy::ecs::prelude::*;
 use bevy::reflect::{FromReflect, Reflect, TypePath, Typed};
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
@@ -40,9 +38,57 @@ pub mod prelude {
     pub use crate::user_input::*;
 
     pub use crate::plugin::InputManagerPlugin;
-    pub use crate::{Actionlike, InputManagerBundle};
+    pub use crate::Actionlike;
+
+    #[expect(deprecated)]
+    pub use crate::bundle::InputManagerBundle;
 
     pub use leafwing_input_manager_macros::serde_typetag;
+}
+
+/// Bundling of an [`InputMap`] and [`ActionState`] of the same [`Actionlike`] type.
+pub mod bundle {
+    #![expect(deprecated)]
+
+    use crate::action_state::ActionState;
+    use crate::input_map::InputMap;
+    use crate::Actionlike;
+    use bevy::ecs::prelude::*;
+
+    /// This [`Bundle`] allows entities to collect and interpret inputs from across input sources
+    ///
+    /// Use with [`InputManagerPlugin`](crate::plugin::InputManagerPlugin), providing the same enum type to both.
+    #[derive(Bundle)]
+    #[deprecated(
+        since = "0.17.0",
+        note = "Use the `InputMap` component instead. Inserting it will now also insert `ActionState` automatically."
+    )]
+    pub struct InputManagerBundle<A: Actionlike> {
+        /// An [`ActionState`] component
+        pub action_state: ActionState<A>,
+        /// An [`InputMap`] component
+        pub input_map: InputMap<A>,
+    }
+
+    // Cannot use derive(Default), as it forces an undesirable bound on our generics
+    impl<A: Actionlike> Default for InputManagerBundle<A> {
+        fn default() -> Self {
+            Self {
+                action_state: ActionState::default(),
+                input_map: InputMap::default(),
+            }
+        }
+    }
+
+    impl<A: Actionlike> InputManagerBundle<A> {
+        /// Creates a [`InputManagerBundle`] with the given [`InputMap`].
+        pub fn with_map(input_map: InputMap<A>) -> Self {
+            Self {
+                input_map,
+                action_state: ActionState::default(),
+            }
+        }
+    }
 }
 
 /// Allows a type to be used as a gameplay action in an input-agnostic fashion
@@ -107,37 +153,6 @@ pub trait Actionlike:
 {
     /// Returns the kind of input control this action represents: buttonlike, axislike, or dual-axislike.
     fn input_control_kind(&self) -> InputControlKind;
-}
-
-/// This [`Bundle`] allows entities to collect and interpret inputs from across input sources
-///
-/// Use with [`InputManagerPlugin`](crate::plugin::InputManagerPlugin), providing the same enum type to both.
-#[derive(Bundle)]
-pub struct InputManagerBundle<A: Actionlike> {
-    /// An [`ActionState`] component
-    pub action_state: ActionState<A>,
-    /// An [`InputMap`] component
-    pub input_map: InputMap<A>,
-}
-
-// Cannot use derive(Default), as it forces an undesirable bound on our generics
-impl<A: Actionlike> Default for InputManagerBundle<A> {
-    fn default() -> Self {
-        Self {
-            action_state: ActionState::default(),
-            input_map: InputMap::default(),
-        }
-    }
-}
-
-impl<A: Actionlike> InputManagerBundle<A> {
-    /// Creates a [`InputManagerBundle`] with the given [`InputMap`].
-    pub fn with_map(input_map: InputMap<A>) -> Self {
-        Self {
-            input_map,
-            action_state: ActionState::default(),
-        }
-    }
 }
 
 /// Classifies [`UserInput`](crate::user_input::UserInput)s and [`Actionlike`] actions based on their behavior (buttons, analog axes, etc.).
