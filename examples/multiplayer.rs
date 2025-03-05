@@ -23,15 +23,9 @@ enum Player {
     Two,
 }
 
-#[derive(Bundle)]
-struct PlayerBundle {
-    player: Player,
-    input_manager: InputManagerBundle<Action>,
-}
-
-impl PlayerBundle {
-    fn input_map(player: Player, gamepad_0: Entity, gamepad_1: Entity) -> InputMap<Action> {
-        let mut input_map = match player {
+impl Player {
+    fn input_map(&self, gamepad_0: Entity, gamepad_1: Entity) -> InputMap<Action> {
+        let mut input_map = match self {
             Player::One => InputMap::new([
                 (Action::Left, KeyCode::KeyA),
                 (Action::Right, KeyCode::KeyD),
@@ -67,23 +61,8 @@ fn spawn_players(mut commands: Commands) {
     let gamepad_0 = commands.spawn(()).id();
     let gamepad_1 = commands.spawn(()).id();
 
-    commands.spawn(PlayerBundle {
-        player: Player::One,
-        input_manager: InputManagerBundle::with_map(PlayerBundle::input_map(
-            Player::One,
-            gamepad_0,
-            gamepad_1,
-        )),
-    });
-
-    commands.spawn(PlayerBundle {
-        player: Player::Two,
-        input_manager: InputManagerBundle::with_map(PlayerBundle::input_map(
-            Player::Two,
-            gamepad_0,
-            gamepad_1,
-        )),
-    });
+    commands.spawn((Player::One, Player::One.input_map(gamepad_0, gamepad_1)));
+    commands.spawn((Player::Two, Player::Two.input_map(gamepad_0, gamepad_1)));
 }
 
 fn move_players(player_query: Query<(&Player, &ActionState<Action>)>) {

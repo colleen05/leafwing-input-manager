@@ -55,17 +55,10 @@ impl ArpgAction {
 }
 
 #[derive(Component)]
+#[require(InputMap<ArpgAction>(Player::default_input_map))]
 pub struct Player;
 
-#[derive(Bundle)]
-struct PlayerBundle {
-    player: Player,
-    // This bundle must be added to your player entity
-    // (or whatever else you wish to control)
-    input_manager: InputManagerBundle<ArpgAction>,
-}
-
-impl PlayerBundle {
+impl Player {
     fn default_input_map() -> InputMap<ArpgAction> {
         // This allows us to replace `ArpgAction::Up` with `Up`,
         // significantly reducing boilerplate
@@ -108,10 +101,7 @@ impl PlayerBundle {
 }
 
 fn spawn_player(mut commands: Commands) {
-    commands.spawn(PlayerBundle {
-        player: Player,
-        input_manager: InputManagerBundle::with_map(PlayerBundle::default_input_map()),
-    });
+    commands.spawn(Player);
 }
 
 fn cast_fireball(query: Query<&ActionState<ArpgAction>, With<Player>>) {
