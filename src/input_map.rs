@@ -19,7 +19,7 @@ use crate::clashing_inputs::ClashStrategy;
 use crate::prelude::updating::CentralInputStore;
 use crate::prelude::UserInputWrapper;
 use crate::user_input::{Axislike, Buttonlike, DualAxislike, TripleAxislike};
-use crate::{Actionlike, InputControlKind};
+use crate::{ActionState, Actionlike, InputControlKind};
 
 #[cfg(feature = "gamepad")]
 use crate::user_input::gamepad::find_gamepad;
@@ -104,6 +104,7 @@ fn find_gamepad(_: Option<Query<Entity, With<Gamepad>>>) -> Entity {
 #[derive(Resource, Component, Debug, Clone, PartialEq, Eq, Reflect, Serialize, Deserialize)]
 #[cfg_attr(feature = "asset", derive(Asset))]
 #[reflect(Resource, Component)]
+#[require(ActionState<A>)]
 pub struct InputMap<A: Actionlike> {
     /// The underlying map that stores action-input mappings for [`Buttonlike`] actions.
     buttonlike_map: HashMap<A, Vec<Box<dyn Buttonlike>>>,
