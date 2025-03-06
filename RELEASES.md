@@ -12,10 +12,7 @@
 
 ### Usability (0.17.0)
 
-- inserting `InputMap<A>` will now also insert `ActionState<A>` automatically, erasing the need for `InputManagerBundle<A>`.
-
-> ![WARNING]
-> `InputManagerBundle<A>` is now deprecated. Use `InputMap<A>` instead. Inserting it will now also insert `ActionState<A>` automatically.
+- inserting `InputMap<A>` will now also insert `ActionState<A>` automatically, erasing the need for `InputManagerBundle<A>` (it is now deprecated).
 
 ## Version 0.16.0
 
