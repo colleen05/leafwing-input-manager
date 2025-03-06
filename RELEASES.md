@@ -3,11 +3,19 @@
 ## Version 0.17.0 (unreleased)
 
 ### Bugs (0.17.0)
+
 - fixed the bug making it impossible to register custom input types via `register_input_kind`
 
 ### Dependencies (0.17.0)
 
 - now supports bevy_egui 0.32
+
+### Usability (0.17.0)
+
+- inserting `InputMap<A>` will now also insert `ActionState<A>` automatically, erasing the need for `InputManagerBundle<A>`.
+
+> ![WARNING]
+> `InputManagerBundle<A>` is now deprecated. Use `InputMap<A>` instead. Inserting it will now also insert `ActionState<A>` automatically.
 
 ## Version 0.16.0
 
